@@ -3,6 +3,7 @@ package com.shop.configurer;
 import com.shop.security.JwtAuthEntryPoint;
 import com.shop.security.JwtAuthenticationFilter;
 import com.shop.security.oauth2.CustomOAuth2UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,18 +39,8 @@ public class WebSecurityConfig {
             .and()
                 .authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasRole("USER")
-                .anyRequest().permitAll()
-            .and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
-            .and()
-                .oauth2Login()
-                .loginPage("/login")
-                .permitAll()
-                .userInfoEndpoint()
-                .userService(oAuth2UserService);
+                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                .anyRequest().permitAll();
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
